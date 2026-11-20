@@ -1,0 +1,72 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "storage.k8s.io/v1",
+      "kind": "StorageClass",
+      "metadata": {
+        "name": "gp3-default",
+        "annotations": {"storageclass.kubernetes.io/is-default-class": "true"}
+      },
+      "provisioner": "ebs.csi.aws.com",
+      "reclaimPolicy": "Delete",
+      "volumeBindingMode": "WaitForFirstConsumer",
+      "allowVolumeExpansion": true,
+      "parameters": {"type": "gp3"}
+    },
+    {
+      "apiVersion": "storage.k8s.io/v1",
+      "kind": "StorageClass",
+      "metadata": {"name": "gp3-retain"},
+      "provisioner": "ebs.csi.aws.com",
+      "reclaimPolicy": "Retain",
+      "volumeBindingMode": "WaitForFirstConsumer",
+      "allowVolumeExpansion": true,
+      "parameters": {"type": "gp3"}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {"name": "web-assets", "namespace": "web"},
+      "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}}}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pvc-11111111",
+        "labels": {"topology.kubernetes.io/zone": "eu-west-1a"}
+      },
+      "spec": {"storageClassName": "gp3-default", "capacity": {"storage": "10Gi"}}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pvc-22222222",
+        "labels": {"topology.kubernetes.io/zone": "eu-west-1b"}
+      },
+      "spec": {"storageClassName": "gp3-retain", "capacity": {"storage": "100Gi"}}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {"name": "postgres", "namespace": "data"},
+      "spec": {
+        "serviceName": "postgres",
+        "replicas": 3,
+        "volumeClaimTemplates": [
+          {
+            "metadata": {"name": "pgdata"},
+            "spec": {
+              "accessModes": ["ReadWriteOnce"],
+              "storageClassName": "gp3-retain",
+              "resources": {"requests": {"storage": "100Gi"}}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

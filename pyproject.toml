@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "k8s-storageclass-audit"
+version = "0.1.0"
+description = "Audit Kubernetes StorageClasses offline from kubectl JSON"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "Michael Tarassov", email = "michael@tarassov.me" }]
+keywords = ["kubernetes", "storageclass", "csi", "audit", "sre", "devops"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Systems Administration",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/moveeeax/k8s-storageclass-audit"
+Issues = "https://github.com/moveeeax/k8s-storageclass-audit/issues"
+
+[project.scripts]
+k8s-storageclass-audit = "k8s_storageclass_audit.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+include = ["k8s_storageclass_audit*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
